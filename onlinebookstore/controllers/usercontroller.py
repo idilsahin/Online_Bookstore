@@ -1,9 +1,10 @@
 
-from flask import Flask, request, jsonify,Blueprint
+from flask import Flask, request, jsonify,Blueprint,render_template,redirect,url_for
 from ..Utils.database import db
 from ..models.book_model import Book
 from ..models.wishlist_model import Wishlist
 from ..models.user_model import User,FavoriteBooks
+from flask_login import login_required, current_user
 
 usercontroller = Blueprint('usercontroller', __name__)
 
@@ -50,3 +51,72 @@ def remove_from_favorites():
     db.session.delete(favorite)
     db.session.commit()
     return jsonify({"message": "Book removed from favorites successfully"}), 200
+
+@usercontroller.route('/usermanagement')
+def usermanagement():
+    users = User.query.all()
+    return render_template('usermanagement.html', users=users,  user=current_user)
+
+
+@usercontroller.route('/get_user/<int:id>', methods=['GET'])
+def get_user(id):
+    user = User.query.get(id)
+
+    if user:
+        user_data = {
+            'id': user.id,
+            'username': user.username,
+            'password': user.password,  # Note: You might want to exclude the password from the response
+            'role_id': user.role_id,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'email': user.email
+        }
+        return jsonify(user_data)
+    else:
+        return jsonify({'error': 'User not found'}), 404
+
+@usercontroller.route('/createuser', methods=['POST', 'GET'])
+def create():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        role_id = int(request.form['role_id'])
+        first_name = request.form['first_name']
+        last_name = request.form['last_name']
+        email = request.form['email']
+
+        new_user = User(
+            username=username,
+            password=password,
+            role_id=role_id,
+            first_name=first_name,
+            last_name=last_name,
+            email=email
+        )
+
+        db.session.add(new_user)
+        db.session.commit()
+        return redirect(url_for('usercontroller.usermanagement'))
+    return render_template('createuser.html')
+
+@usercontroller.route('/update/<int:id>', methods=['POST', 'GET'])
+def update(id):
+    user = User.query.get(id)
+    if request.method == 'POST':
+        user.username = request.form['username']
+        user.password = request.form['password']
+        user.role_id = int(request.form['role_id'])
+        user.first_name = request.form['first_name']
+        user.last_name = request.form['last_name']
+        user.email = request.form['email']
+        db.session.commit()
+        return redirect(url_for('index'))
+    return render_template('update.html', user=user)
+
+@usercontroller.route('/deleteuser/<int:id>', methods=['POST'])
+def deleteuser(id):
+    user = User.query.get(id)
+    db.session.delete(user)
+    db.session.commit()
+    return jsonify({'message': 'User deleted successfully'})

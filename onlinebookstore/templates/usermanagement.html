@@ -1,0 +1,99 @@
+{% extends "index.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+    <h2>User Management</h2>
+
+    <!-- Search Section -->
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <div class="input-group">
+                <input type="text" class="form-control" id="searchInput" placeholder="Search by name, last name, username, or email">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" id="searchBtn">Search</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 text-right">
+            <a href="/createuser" class="btn btn-success" id="createUserBtn">Create New User</a>
+        </div>
+    </div>
+
+    <!-- Search Results Table -->
+    <table class="table" id="userTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.email }}</td>
+                <td>
+                    <button class="btn btn-primary btn-sm updateBtn" data-id="{{ user.id }}">Update</button>
+                    <button class="btn btn-danger btn-sm deleteBtn" data-id="{{ user.id }}">Delete</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Update User Modal -->
+<div class="modal" tabindex="-1" role="dialog" id="updateUserModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Update User</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="updateUserForm">
+                    <input type="hidden" id="updateUserId" name="id">
+                    <div class="form-group">
+                        <label for="updateUsername">Username:</label>
+                        <input type="text" class="form-control" id="updateUsername" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="updatePassword">Password:</label>
+                        <input type="password" class="form-control" id="updatePassword" name="password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="updateRoleId">Role ID:</label>
+                        <input type="number" class="form-control" id="updateRoleId" name="role_id" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="updateFirstName">First Name:</label>
+                        <input type="text" class="form-control" id="updateFirstName" name="first_name">
+                    </div>
+                    <div class="form-group">
+                        <label for="updateLastName">Last Name:</label>
+                        <input type="text" class="form-control" id="updateLastName" name="last_name">
+                    </div>
+                    <div class="form-group">
+                        <label for="updateEmail">Email:</label>
+                        <input type="email" class="form-control" id="updateEmail" name="email" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="updateUserSubmitBtn">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+{% endblock %}

@@ -2,6 +2,8 @@ from flask import Flask, request, jsonify,Blueprint,render_template
 from ..Utils.database import db
 from ..models.book_model import Book # db, User, Book, Order, OrderDetail, Review, ShoppingCart, Wishlist
 from flask_login import login_required, current_user
+import os
+from werkzeug.utils import secure_filename
 
 bookcontroller = Blueprint('bookcontroller', __name__)
 # Book Controllers
@@ -55,24 +57,51 @@ def get_books():
     print(book_list)
     return render_template('recommended.html', books=book_list, user=current_user)
 
-@bookcontroller.route('/book', methods=['POST'])
+@bookcontroller.route('/productmanagement')
+def index():
+    return render_template('productmanagement.html',  user=current_user)
+
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'png', 'jpg', 'jpeg', 'gif'}
+
+@bookcontroller.route('/create_book', methods=['POST'])
 def create_book():
-    data = request.json
+    title = request.form.get('title')
+    author = request.form.get('author')
+    isbn = request.form.get('isbn')
+    publisher = request.form.get('publisher')
+    publication_year = request.form.get('publication_year')
+    category = request.form.get('category')
+    price = request.form.get('price')
+    stock_quantity = request.form.get('stock_quantity')
+    description = request.form.get('description')
+    
+    # Handle cover image upload
+    cover_image = request.files['cover_image']
+    if cover_image and allowed_file(cover_image.filename):
+        filename = secure_filename(cover_image.filename)
+        cover_image.save(os.path.join('onlinebookstore\\static\\images', filename))
+    else:
+        filename = None  # Set to default image or handle as needed
+
     new_book = Book(
-        title=data.get('title'),
-        author=data.get('author'),
-        isbn=data.get('isbn'),
-        publisher=data.get('publisher'),
-        publication_year=data.get('publication_year'),
-        category=data.get('category'),
-        price=data.get('price'),
-        stock_quantity=data.get('stock_quantity'),
-        description=data.get('description'),
-        cover_image=data.get('cover_image')
+        title=title,
+        author=author,
+        isbn=isbn,
+        publisher=publisher,
+        publication_year=publication_year,
+        category=category,
+        price=price,
+        stock_quantity=stock_quantity,
+        description=description,
+        cover_image=filename
     )
+
     db.session.add(new_book)
     db.session.commit()
-    return jsonify({"message": "Book created successfully", "book_id": new_book.id}), 201
+
+    return jsonify({'message': 'Book created successfully'})
 
 @bookcontroller.route('/book/<int:book_id>', methods=['GET'])
 def get_book(book_id):
@@ -101,3 +130,20 @@ def delete_book(book_id):
     db.session.delete(book)
     db.session.commit()
     return jsonify({"message": "Book deleted successfully"}), 200
+
+@bookcontroller.route('/search_book', methods=['GET'])
+def search_book():
+    query = request.args.get('query')
+
+    if not query:
+        return jsonify({'error': 'No search query provided'}), 400
+
+    # Perform a case-insensitive search on title, author, or book id
+    results = Book.query.filter(
+        (Book.title.ilike(f'%{query}%')) |
+        (Book.author.ilike(f'%{query}%')) |
+        (Book.id == query)
+    ).all()
+
+    return render_template('productmanagement.html', user=current_user ,results=results, search_query=query)
+

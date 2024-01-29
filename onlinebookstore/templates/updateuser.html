@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit User</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container mt-4">
+    <h2>Edit User</h2>
+    <form method="post" id="updateUserForm" action="#">
+        <input type="hidden" id="updateUserId" name="id">
+        <div class="form-group">
+            <label for="updateUsername">Username:</label>
+            <input type="text" class="form-control" id="updateUsername" name="username" required>
+        </div>
+        <div class="form-group">
+            <label for="updatePassword">Password:</label>
+            <input type="password" class="form-control" id="updatePassword" name="password" required>
+        </div>
+        <div class="form-group">
+            <label for="updateRoleId">Role ID:</label>
+            <input type="number" class="form-control" id="updateRoleId" name="role_id" required>
+        </div>
+        <div class="form-group">
+            <label for="updateFirstName">First Name:</label>
+            <input type="text" class="form-control" id="updateFirstName" name="first_name">
+        </div>
+        <div class="form-group">
+            <label for="updateLastName">Last Name:</label>
+            <input type="text" class="form-control" id="updateLastName" name="last_name">
+        </div>
+        <div class="form-group">
+            <label for="updateEmail">Email:</label>
+            <input type="email" class="form-control" id="updateEmail" name="email" required>
+        </div>
+        <button type="button" class="btn btn-primary" id="updateUserSubmitBtn">Submit</button>
+        <a href="/" class="btn btn-secondary ml-2">Back</a>
+    </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script>
+// JavaScript code for handling user update form in the modal
+$(document).ready(function() {
+    // Implement logic to populate the form with user data when the modal is shown
+    // The user data should be fetched via AJAX and filled into the form fields
+    // This example assumes that the data is available in the global variable 'userData'
+
+    // Populate the form with user data
+    $('#updateUserId').val(userData.id);
+    $('#updateUsername').val(userData.username);
+    $('#updatePassword').val('');
+    $('#updateRoleId').val(userData.role_id);
+    $('#updateFirstName').val(userData.first_name);
+    $('#updateLastName').val(userData.last_name);
+    $('#updateEmail').val(userData.email);
+
+    // Submit button click event in the update user modal
+    $('#updateUserSubmitBtn').click(function() {
+        // Implement logic to send updated user data to the backend for update operation
+        // After successful update, you may want to close the modal or perform other actions
+    });
+});
+</script>
+</body>
+</html>

@@ -17,6 +17,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
 
     <!-- script
     ================================================== -->
@@ -138,10 +140,24 @@
                         <a href="contact.html" class="dropdown-item fs-5 fw-medium">Contact <span class="text-primary">(PRO)</span></a>
                       </li>
                     </ul>
-                  </li>                  
+                  </li>   
+                  <li class="nav-item dropdown">
+                    <a class="nav-link text-uppercase dropdown-toggle ms-0" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Admin<svg class="bi" width="18" height="18"><use xlink:href="#chevron-down"></use></svg></a>
+                    <ul class="dropdown-menu">
+                      <li class="nav-item">
+                        <a class="nav-link  ms-0" href="/usermanagement">User Management</a>
+                      </li>
+                      <li>
+                        <a class="nav-link  ms-0" href="/about">Customer Orders</a>                        
+                      </li>
+                      <li>
+                        <a class="nav-link  ms-0" href="/productmanagement">Product Operations</a>                        
+                      </li>                    
+                    </ul>
+                  </li>                 
                 </ul>
                 
-                <a class="navbar-brand d-none d-lg-block me-0" href="index.html">
+                <a class="navbar-brand d-none d-lg-block me-0" href="/">
                   <img src="/static/images/main-logo.png" class="logo">
                 </a>
 
@@ -367,5 +383,111 @@
     <script type="text/javascript" src="/static/js/bootstrap.bundle.min.js"></script>
     <script type="text/javascript" src="/static/js/plugins.js"></script>
     <script type="text/javascript" src="/static/js/script.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script>
+      $(document).ready(function() {
+          // DataTable initialization
+          $('#userTable').DataTable();
+      
+          // Search button click event
+          $('#searchBtn').click(function() {
+              // Implement search logic here
+              // You may use AJAX to send a request to the server with search parameters
+              // Update the DataTable with the search results
+          });
+      
+          // Create new user button click event
+          $('#createUserBtn').click(function() {
+              // Implement logic to open the create user modal
+              // You may use a Bootstrap modal or create your own logic
+          });
+      
+          // Update button click event
+          $('.updateBtn').click(function() {
+              // Implement logic to open the update user modal
+              // Retrieve user data using AJAX and populate the form in the modal
+              var userId = $(this).data('id');
+      
+              // Use AJAX to fetch user data
+              $.ajax({
+                  url: '/get_user/' + userId,
+                  type: 'GET',
+                  success: function(user) {
+                      // Populate the form with user data
+                      $('#updateUserId').val(user.id);
+                      $('#updateUsername').val(user.username);
+                      $('#updatePassword').val('');  // You may choose to leave this empty or handle it differently
+                      $('#updateRoleId').val(user.role_id);
+                      $('#updateFirstName').val(user.first_name);
+                      $('#updateLastName').val(user.last_name);
+                      $('#updateEmail').val(user.email);
+      
+                      // Show the update user modal
+                      $('#updateUserModal').modal('show');
+                  },
+                  error: function(error) {
+                      console.error('Error fetching user data:', error);
+                  }
+              });
+          });
+      
+          // Delete button click event
+          $('.deleteBtn').click(function() {
+          var userId = $(this).data('id');
+      
+          Swal.fire({
+              title: 'Are you sure?',
+              text: 'You won\'t be able to revert this!',
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33',
+              confirmButtonText: 'Yes, delete it!'
+          }).then((result) => {
+              if (result.isConfirmed) {
+                  // Implement logic to send delete operation to the backend with the user id
+                  $.ajax({
+                      url: '/deleteuser/' + userId,
+                      type: 'POST',
+                      success: function(response) {
+                          Swal.fire('Deleted!', 'User has been deleted.', 'success');
+                          // Refresh DataTable or perform any other necessary actions
+                          location.reload();
+                      },
+                      error: function(error) {
+                          console.error('Error deleting user:', error);
+                      }
+                  });
+              }
+          });
+      });
+      
+          // Submit button click event in the update user modal
+          $('#updateUserSubmitBtn').click(function() {
+              // Implement logic to send updated user data to the backend for update operation
+              // After successful update, you may want to refresh the DataTable
+              var formData = $('#updateUserForm').serialize();
+              $.ajax({
+                  url: '/update_user',
+                  type: 'POST',
+                  data: formData,
+                  success: function(response) {
+                      $('#updateUserModal').modal('hide');
+                      // Swal.fire('Updated!', 'User data has been updated.', 'success');
+                      // Refresh DataTable or perform any other necessary actions
+                      location.reload();
+                  },
+                  error: function(error) {
+                      console.error('Error updating user:', error);
+                  }
+              });
+          });
+      });
+      </script>
   </body>
 </html>

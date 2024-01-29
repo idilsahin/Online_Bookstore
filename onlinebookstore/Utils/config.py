@@ -19,3 +19,5 @@ class Config:
         {'code': 'tr', 'name': 'Turkish'},
         {'code': 'ae', 'name': 'Arabic'}
         ]
+   
+   UPLOAD_FOLDER = 'onlinebookstore\\static\\images'
