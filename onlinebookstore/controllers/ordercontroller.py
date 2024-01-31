@@ -1,38 +1,63 @@
 
-from flask import Flask, request, jsonify,Blueprint
+from flask import Flask, request, jsonify,Blueprint,render_template
 from ..Utils.database import db
 from ..models.order_model import Order # db, User, Book, Order, OrderDetail, Review, ShoppingCart, Wishlist
 from ..models.order_details_model import OrderDetail
 from ..models.book_model import Book
+from ..controllers.cardcontroller import get_customers_cart
+from ..controllers.usercontroller import get_user
+from flask_login import login_required, current_user
+from datetime import datetime
 
 ordercontroller = Blueprint('ordercontroller', __name__)
 # Book Controllers
-@ordercontroller.route('/order', methods=['POST'])
+#@ordercontroller.route('/order', methods=['POST'])
+@ordercontroller.route('/create_order', methods=['GET', 'POST'])
 def create_order():
-    data = request.json
-    user_id = data.get('user_id')
-    order_details = data.get('order_details')  # This should be a list of dictionaries
+    
+    order_details,total_price = get_customers_cart()
+    current_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    order_status_options = ["Pending", "Processing", "Shipped", "Delivered"]
+    if request.method == 'POST':
+        # Retrieve data from the form submission
+        user_id = request.form.get('user_id')
+        total_price = request.form.get('total_price')
+        order_date = datetime.strptime(request.form.get('order_date'), '%Y-%m-%d %H:%M:%S')
+        shipping_address = request.form.get('shipping_address')
+        status = request.form.get('status')
+        payment_method = request.form.get('payment_method')        
 
-    if not user_id or not order_details:
-        return jsonify({"error": "Missing user_id or order_details"}), 400
+                # Create an instance of the Order model
+        order = Order(
+            user_id=user_id,
+            total_price=total_price,
+            order_date=order_date,
+            shipping_address=shipping_address,
+            status="Processing",
+            payment_method=payment_method
+        )
+        db.session.add(order)
+        db.session.flush()  # Flush to get the order ID
 
-    new_order = Order(user_id=user_id)
-    db.session.add(new_order)
-    db.session.flush()  # Flush to get the order ID
+        
 
-    for detail in order_details:
-        book_id = detail.get('book_id')
-        quantity = detail.get('quantity')
-        price_per_unit = detail.get('price_per_unit')
+        for detail in order_details:
+            book_id = detail.get('book_id')
+            quantity = detail.get('quantity')
+            price_per_unit = detail.get('price_per_unit')
 
-        if not all([book_id, quantity, price_per_unit]):
-            return jsonify({"error": "Missing order detail information"}), 400
+            if not all([book_id, quantity, price_per_unit]):
+                return jsonify({"error": "Missing order detail information"}), 400
 
-        order_detail = OrderDetail(order_id=new_order.id, book_id=book_id, quantity=quantity, price_per_unit=price_per_unit)
-        db.session.add(order_detail)
+            order_detail = OrderDetail(order_id=order.id, book_id=book_id, quantity=quantity, price_per_unit=price_per_unit)
+            db.session.add(order_detail)
 
-    db.session.commit()
-    return jsonify({"message": "Order created successfully", "order_id": new_order.id}), 201
+        db.session.commit()
+        
+        return jsonify({"message": "Order created successfully", "order_id": order.id}), 201
+    
+    return render_template('ordermanagement.html', cart_details=order_details, total_price=total_price,current_date=current_date, user=current_user)  # Render the form on GET request        
+
 
 @ordercontroller.route('/order/<int:order_id>', methods=['GET'])
 def get_order(order_id):
@@ -74,3 +99,17 @@ def delete_order(order_id):
     db.session.delete(order)
     db.session.commit()
     return jsonify({"message": "Order deleted successfully"}), 200
+
+@ordercontroller.route('/admin/search', methods=['GET', 'POST'])
+def search_orders():
+    if request.method == 'POST':
+        user_id = request.form.get('user_id')
+        userinfo = get_user(user_id)
+
+        if userinfo:
+            orders = Order.query.filter_by(user_id=user_id).all()
+            return render_template('customerorders.html',user=current_user, orders=orders)
+        else:
+            return render_template('customerorders.html',  user=current_user, orders=None)
+
+    return render_template('customerorders.html', user=current_user)

@@ -74,28 +74,13 @@ def get_book(id):
         abort(404)
     return render_template('book.html', book=book,  user=current_user)
 
-FAVORITES = set()
 
-@bookcontroller.route("/favorites/add", methods=['POST'])
-def add_to_favorites():
-    data = request.form
-    id = data.get('id')
-    title = data.get('title')
-    if id and title:
-        FAVORITES.add(id)
-        flash(f'{title} was successfully added to your favorites!')
-    return redirect(url_for('bookcontroller.books'))
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'png', 'jpg', 'jpeg', 'gif'}
 
 @bookcontroller.route('/create_book', methods=['POST'])
 def create_book():
-
-    current_directory = os.getcwd()
-
-# Print the current working directory
-    print("Current Working Directory:", current_directory)
     title = request.form.get('title')
     author = request.form.get('author')
     isbn = request.form.get('isbn')
@@ -110,8 +95,8 @@ def create_book():
     cover_image = request.files['cover_image']
     if cover_image and allowed_file(cover_image.filename):
         filename = secure_filename(cover_image.filename)
-        #cover_image.save(os.path.join('\\onlinebookstore\\static\\images', filename))
         cover_image.save(os.path.join(os.getcwd(), 'Online_Bookstore','onlinebookstore', 'static', 'images', filename))
+        #cover_image.save(os.path.join('onlinebookstore\\static\\images', filename))
     else:
         filename = None  # Set to default image or handle as needed
 
@@ -131,7 +116,7 @@ def create_book():
     db.session.add(new_book)
     db.session.commit()
 
-    return redirect(url_for('bookcontroller.books'))
+    return jsonify({'message': 'Book created successfully'})
 
 @bookcontroller.route('/book2/<int:book_id>', methods=['GET'])
 def get_book2(book_id):

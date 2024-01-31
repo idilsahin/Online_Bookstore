@@ -19,7 +19,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8sh+Wy9Q4NlA7cDzC+EmAqGGK9tRVzisJSZIq5" crossorigin="anonymous">
     <!-- script
     ================================================== -->
     <script src="/static/js/modernizr.js"></script>
@@ -94,15 +94,6 @@
               <ul id="navbar" class="navbar-nav w-100 d-flex justify-content-between align-items-center">
                 
                 <ul class="list-unstyled d-lg-flex justify-content-md-between align-items-center">
-                  <li class="nav-item">
-                    <a class="nav-link text-uppercase ms-0" href="/about">About</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link text-uppercase ms-0" href="/recommended">Recommended</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link text-uppercase ms-0" href="/myorders" target="_blank">My Orders<svg class="bi mb-1" width="18" height="18"><use xlink:href="#cart-outline"></use></svg></a>
-                  </li>
                   <li class="nav-item dropdown">
                     <a class="nav-link text-uppercase dropdown-toggle ms-0" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Pages<svg class="bi" width="18" height="18"><use xlink:href="#chevron-down"></use></svg></a>
                     <ul class="dropdown-menu">
@@ -116,31 +107,23 @@
                         <a href="/books" class="dropdown-item fs-5 fw-medium">Books <span class="text-primary"></span></a>
                       </li>
                       <li>
-                        <a href="single-product.html" class="dropdown-item fs-5 fw-medium">Single Product <span class="text-primary">(PRO)</span></a>
+                        <a href="/recommended" class="dropdown-item fs-5 fw-medium">Recommended <span class="text-primary"></span></a>
                       </li>
                       <li>
-                        <a href="author.html" class="dropdown-item fs-5 fw-medium">Author <span class="text-primary">(PRO)</span></a>
+                        <a href="/author" class="dropdown-item fs-5 fw-medium">Author <span class="text-primary"></span></a>
                       </li>
                       <li>
-                        <a href="login.html" class="dropdown-item fs-5 fw-medium">Account <span class="text-primary">(PRO)</span></a>
+                        <a href="/login" class="dropdown-item fs-5 fw-medium">Account <span class="text-primary"></span></a>
                       </li>
                       <li>
-                        <a href="cart.html" class="dropdown-item fs-5 fw-medium">Cart <span class="text-primary">(PRO)</span></a>
+                        <a href="/cart" class="dropdown-item fs-5 fw-medium">Cart <span class="text-primary"><svg class="bi mb-1" width="18" height="18"><use xlink:href="#cart-outline"></use></svg></span></a>
                       </li>
                       <li>
-                        <a href="checkout.html" class="dropdown-item fs-5 fw-medium">Checkout <span class="text-primary">(PRO)</span></a>
-                      </li>
-                      <li>
-                        <a href="blog.html" class="dropdown-item fs-5 fw-medium">Blog <span class="text-primary">(PRO)</span></a>
-                      </li>
-                      <li>
-                        <a href="single-post.html" class="dropdown-item fs-5 fw-medium">Single Post <span class="text-primary">(PRO)</span></a>
-                      </li>
-                      <li>
-                        <a href="contact.html" class="dropdown-item fs-5 fw-medium">Contact <span class="text-primary">(PRO)</span></a>
+                        <a href="contact.html" class="dropdown-item fs-5 fw-medium">Contact <span class="text-primary"></span></a>
                       </li>
                     </ul>
                   </li>   
+                  {% if user.role_id == 100 %}
                   <li class="nav-item dropdown">
                     <a class="nav-link text-uppercase dropdown-toggle ms-0" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Admin<svg class="bi" width="18" height="18"><use xlink:href="#chevron-down"></use></svg></a>
                     <ul class="dropdown-menu">
@@ -148,13 +131,14 @@
                         <a class="nav-link  ms-0" href="/usermanagement">User Management</a>
                       </li>
                       <li>
-                        <a class="nav-link  ms-0" href="/about">Customer Orders</a>                        
+                        <a class="nav-link  ms-0" href="/admin/search">Customer Orders</a>                        
                       </li>
                       <li>
                         <a class="nav-link  ms-0" href="/productmanagement">Product Operations</a>                        
                       </li>                    
                     </ul>
-                  </li>                 
+                  </li>
+                  {% endif %}                 
                 </ul>
                 
                 <a class="navbar-brand d-none d-lg-block me-0" href="/">
@@ -170,9 +154,7 @@
                       </form>
                     </div>
                   </li>
-                  <li class="nav-item">
-                    <a class="nav-link text-uppercase me-0" href="/logout">Account</a>
-                  </li>
+
                   <li class="cart-dropdown nav-item dropdown">
                     <a class="nav-link text-uppercase dropdown-toggle me-0" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Cart(2)</a>
                     <div class="dropdown-menu dropdown-menu-end p-3">
@@ -210,6 +192,7 @@
                       </div>
                     </div>
                   </li>
+
                   <li class="nav-item dropdown no-arrow">
                     <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -217,9 +200,11 @@
                             {{user.last_name}}</span>
                         <img class="img-profile rounded-circle" src="/static/img/undraw_profile.svg">
                     </a>
+
                     <!-- Dropdown - User Information -->
                     <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                         aria-labelledby="userDropdown">
+                        {% if user.is_authenticated %}
                         <a class="dropdown-item" href="#">
                             <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                             Profile
@@ -233,10 +218,20 @@
                             Activity Log
                         </a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                        <a class="dropdown-item" href="/logout">
                             <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                             Logout
                         </a>
+                        {% else %}
+                        <a class="dropdown-item" href="/login">
+                          <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                          Login
+                      </a>
+                      <a class="dropdown-item" href="/sign-up">
+                        <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                        Sign Up
+                    </a>
+                        {% endif %}
                     </div>
                 </li>
 

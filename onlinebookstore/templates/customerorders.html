@@ -1,0 +1,54 @@
+{% extends "index.html" %}
+
+{% block content %}
+
+
+
+    <div class="container mt-5">
+        <h2 class="mb-4">Admin Order Management</h2>
+
+        <!-- Search Form -->
+        <form action="/admin/search" method="POST" class="mb-4">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Enter User ID" name="user_id" required>
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+        </form>
+
+        <!-- Orders Table -->
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Tracking Number</th>
+                    <th>User ID</th>
+                    <th>Total Price</th>
+                    <th>Order Date</th>
+                    <th>Shipping Address</th>
+                    <th>Status</th>
+                    <th>Payment Method</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td>{{ order.tracking_number }}</td>
+                    <td>{{ order.user_id }}</td>
+                    <td>${{ order.total_price }}</td>
+                    <td>{{ order.order_date.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                    <td>{{ order.shipping_address }}</td>
+                    <td>{{ order.status }}</td>
+                    <td>{{ order.payment_method }}</td>
+
+                    <td>
+                        <a href="{{ url_for('ordercontroller.get_order', order_id=order.id) }}" class="btn btn-info btn-sm">Details</a>
+                        <a href="{{ url_for('ordercontroller.update_order', order_id=order.id) }}" class="btn btn-warning btn-sm">Update</a>
+                        <a href="{{ url_for('ordercontroller.delete_order', order_id=order.id) }}" class="btn btn-danger btn-sm">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% endblock %}

@@ -3,17 +3,69 @@
 {% block content %}
 
 
-    <!-- Begin Page Content -->
-    <div class="container-fluid">
-
-        <!-- 404 Error Text -->
-        <div class="text-center">
-            <p class="lead text-gray-800 mb-5">ABOUT</p>
-            <p class="text-gray-500 mb-0">bu sayfa deneme amaclidir</p>
-            <a href="/">&larr; Back to Dashboard</a>
+<section id="Authors">
+    <div class="container">
+      <div class="row position-relative">
+        <div class="col-lg-8">
+          <div class="image-holder">
+            <img src="/static/images/single-image3.jpg" alt="single" class="single-image img-fluid">
+          </div>
         </div>
-
+        <div class="about-content bg-gray col-lg-4 m-auto top-0 end-0 bottom-0">
+          <h3 class="py-3">Who are we</h3>
+          <p>Et id sapien id enim, sit tempor cursus elit, fusce. Nunc tristique facilisis consectetur at vivamus ut porta porta. Ut nisl, tortor, aliquam blandit vitae vehicula vivamus leo nullam urna, scelerisque unc lectus phasellus adipiscing arcu. Tristique facilisis nunc consectetur at tempor.</p>
+          <a href="about.html" class="btn">About us →</a>
+        </div>
+      </div>
     </div>
+  </section>
     <!-- /.container-fluid -->
-
+    <section id="testimonials" class="position-relative padding-xlarge">
+        <div class="container">
+          <div class="row">
+            <div class="offset-md-2 col-md-8">
+              <h3 class="text-center mb-5">What our customers says</h3>
+              <div class="review-content position-relative">
+                <div class="swiper testimonial-swiper">
+                  <div class="swiper-wrapper">
+                    <div class="swiper-slide text-center d-flex justify-content-center">
+                      <div class="review-item">
+                        <blockquote class="fs-1 fw-light">“A pellen tesque pretium feugiat vel morbi sagittis lorem habi tasse cursus. Suspen dise tempus oncu enim pellen tesque este pretium in neque, elit morbi sagittis lorem habi mattis.”</blockquote>
+                        <div class="author-detail">
+                          <div class="name fw-bold text-uppercase pt-2">Anna garcia</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="swiper-slide text-center d-flex justify-content-center">
+                      <div class="review-item">
+                        <blockquote class="fs-1 fw-light">“A pellen tesque pretium feugiat vel morbi sagittis lorem habi tasse cursus. Suspen dise tempus oncu enim pellen tesque este pretium in neque, elit morbi sagittis lorem habi mattis.”</blockquote>
+                        <div class="author-detail">
+                          <div class="name fw-bold text-uppercase pt-2">Anna garcia</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="swiper-slide text-center d-flex justify-content-center">
+                      <div class="review-item">
+                        <blockquote class="fs-1 fw-light">“A pellen tesque pretium feugiat vel morbi sagittis lorem habi tasse cursus. Suspen dise tempus oncu enim pellen tesque este pretium in neque, elit morbi sagittis lorem habi mattis.”</blockquote>
+                        <div class="author-detail">
+                          <div class="name fw-bold text-uppercase pt-2">Anna garcia</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="swiper-buttons text-center mt-5">
+                <button class="swiper-prev testimonial-arrow-prev me-2">
+                  <svg width="41" height="41"><use xlink:href="#arrow-left"></use></svg>
+                </button>
+                <span>|</span>
+                <button class="swiper-next testimonial-arrow-next ms-2">
+                  <svg width="41" height="41"><use xlink:href="#arrow-right"></use></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 {% endblock %}

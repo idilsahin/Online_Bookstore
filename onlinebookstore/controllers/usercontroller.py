@@ -1,5 +1,5 @@
 
-from flask import Flask, request, jsonify,Blueprint,render_template,redirect,url_for
+from flask import Flask, request, jsonify,Blueprint,render_template,redirect,url_for,flash
 from ..Utils.database import db
 from ..models.book_model import Book
 from ..models.wishlist_model import Wishlist
@@ -10,17 +10,18 @@ usercontroller = Blueprint('usercontroller', __name__)
 
 @usercontroller.route('/favorite', methods=['POST'])
 def add_to_favorites():
-    data = request.json
-    user_id = data.get('user_id')
-    book_id = data.get('book_id')
-
+    data = request.form
+    book_id = data.get('id')
+    title = data.get('title')
+    user_id = current_user.id
     if not all([user_id, book_id]):
         return jsonify({"error": "Missing user_id or book_id"}), 400
 
     favorite = FavoriteBooks(user_id=user_id, book_id=book_id)
     db.session.add(favorite)
     db.session.commit()
-    return jsonify({"message": "Book added to favorites successfully"}), 201
+    return redirect(url_for('bookcontroller.books'))
+
 
 @usercontroller.route('/favorite/<int:user_id>', methods=['GET'])
 def view_favorites(user_id):
@@ -75,6 +76,8 @@ def get_user(id):
         return jsonify(user_data)
     else:
         return jsonify({'error': 'User not found'}), 404
+    
+
 
 @usercontroller.route('/createuser', methods=['POST', 'GET'])
 def create():

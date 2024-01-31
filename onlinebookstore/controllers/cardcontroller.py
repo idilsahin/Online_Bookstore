@@ -1,13 +1,15 @@
-from flask import Flask, request, jsonify,Blueprint
+from flask import Flask, request, jsonify,Blueprint,render_template,redirect,url_for
 from ..Utils.database import db
 from ..models.book_model import Book
 from ..models.shoppingcart_model import ShoppingCart
+from flask_login import login_required, current_user
+
 
 cardcontroller = Blueprint('cardcontroller', __name__)
 
 @cardcontroller.route('/cart', methods=['POST'])
 def add_to_cart():
-    data = request.json
+    data = request.form
     user_id = data.get('user_id')
     book_id = data.get('book_id')
     quantity = data.get('quantity', 1)  # default to 1 if not specified
@@ -18,7 +20,7 @@ def add_to_cart():
     cart_item = ShoppingCart(user_id=user_id, book_id=book_id, quantity=quantity)
     db.session.add(cart_item)
     db.session.commit()
-    return jsonify({"message": "Item added to cart successfully"}), 201
+    return redirect(url_for('bookcontroller.books'))
 
 @cardcontroller.route('/cart/<int:user_id>', methods=['GET'])
 def view_cart(user_id):
@@ -36,7 +38,58 @@ def view_cart(user_id):
             "price_per_unit": book.price
         })
 
-    return jsonify(cart_details), 200
+    return render_template("home.html",cart_details=cart_details, user=current_user)
+
+@cardcontroller.route('/cart', methods=['GET'])
+@login_required
+def mycart():
+    cart_items = ShoppingCart.query.filter_by(user_id=current_user.id).all()
+
+    if not cart_items:
+        return jsonify({"message": "Cart is empty"}), 404
+
+    cart_details = []
+    total_price = 0  # Initialize total_price
+
+    for item in cart_items:
+        book = Book.query.get(item.book_id)
+        subtotal = item.quantity * book.price  # Calculate subtotal for each item
+        total_price += subtotal  # Update total_price
+        cart_details.append({
+            "book_title": book.title,
+            "book_id": book.id,
+            "quantity": item.quantity,
+            "price_per_unit": book.price,
+            "subtotal": subtotal  # Include subtotal in the dictionary
+        })
+    
+    total_price = round(total_price, 2)
+    return render_template("mycard.html", cart_details=cart_details, total_price=total_price, user=current_user)
+
+
+def get_customers_cart():
+    cart_items = ShoppingCart.query.filter_by(user_id=current_user.id).all()
+
+    if not cart_items:
+        return jsonify({"message": "Cart is empty"}), 404
+
+    cart_details = []
+    total_price = 0  # Initialize total_price
+
+    for item in cart_items:
+        book = Book.query.get(item.book_id)
+        subtotal = item.quantity * book.price  # Calculate subtotal for each item
+        total_price += subtotal  # Update total_price
+        cart_details.append({
+            "book_title": book.title,
+            "book_id": book.id,
+            "quantity": item.quantity,
+            "price_per_unit": book.price,
+            "subtotal": subtotal  # Include subtotal in the dictionary
+        })
+
+    return cart_details, total_price
+
 
 @cardcontroller.route('/cart/update', methods=['PUT'])
 def update_cart():
@@ -52,15 +105,18 @@ def update_cart():
     db.session.commit()
     return jsonify({"message": "Cart updated successfully"}), 200
 
-@cardcontroller.route('/cart/delete', methods=['DELETE'])
+@cardcontroller.route('/cart/delete', methods=['POST'])
 def delete_from_cart():
-    data = request.json
-    cart_item_id = data.get('cart_item_id')
+    data = request.form
+    user_id = data.get('user_id')
+    book_id = data.get('book_id')
 
-    if not cart_item_id:
+    #cart_item = ShoppingCart.query.get((user_id, book_id))
+    cart_item = ShoppingCart.query.filter_by(user_id=user_id, book_id=book_id).first()
+
+    if not cart_item:
         return jsonify({"error": "Missing cart_item_id"}), 400
 
-    cart_item = ShoppingCart.query.get_or_404(cart_item_id)
     db.session.delete(cart_item)
     db.session.commit()
-    return jsonify({"message": "Item removed from cart successfully"}), 200
+    return redirect(url_for('cardcontroller.mycart'))

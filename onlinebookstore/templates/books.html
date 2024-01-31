@@ -16,8 +16,13 @@
                     </h5>
                     <span class="item-price  fs-4">${{ book.price }}</span>
                     <div class="cart-button mt-1">
-                        <a href="#" class="btn">Add to cart</a>
-                        <form method="POST" action="{{ url_for('bookcontroller.add_to_favorites') }}"
+                        <form method="POST" action="{{ url_for('cardcontroller.add_to_cart') }}" class="d-inline-flex">
+                            <input type="hidden" name="user_id" value="{{ current_user.id }}">
+                            <input type="hidden" name="book_id" value="{{ book.id }}">
+                            <input type="hidden" name="quantity" value="1">  <!-- Default quantity to 1 -->
+                            <button type="submit" class="btn">Add to cart</button>
+                        </form>
+                        <form method="POST" action="{{ url_for('usercontroller.add_to_favorites') }}"
                             class="d-inline-flex">
                             <input type="hidden" name="title" value="{{ book.title }}">
                             <input type="hidden" name="id" value="{{ book.id }}">
@@ -38,3 +43,5 @@
 </div>
 
 {% endblock %}
+
+

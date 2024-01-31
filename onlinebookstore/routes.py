@@ -15,6 +15,10 @@ def index():
 def about():
  return render_template("about.html", user=current_user)
 
+@routes.route('/author')
+def author():
+ return render_template("author.html", user=current_user)
+
 @routes.route('/recommended')
 def recommended():
  return render_template("recomended.html", user=current_user)
