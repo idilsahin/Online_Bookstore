@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify,Blueprint,render_template
+from flask import Flask, request, jsonify,Blueprint,render_template,abort,render_template_string,flash,redirect,url_for
 from ..Utils.database import db
 from ..models.book_model import Book # db, User, Book, Order, OrderDetail, Review, ShoppingCart, Wishlist
 from flask_login import login_required, current_user
@@ -61,12 +61,41 @@ def get_books():
 def index():
     return render_template('productmanagement.html',  user=current_user)
 
+@bookcontroller.route('/books')
+def books():
+    # Fetch books from the database
+    books = Book.query.all()
+    return render_template('books.html', books=books,  user=current_user)
+
+@bookcontroller.route("/book/<int:id>", methods=["GET"])
+def get_book(id):
+    book = Book.query.get(id)
+    if book is None:
+        abort(404)
+    return render_template('book.html', book=book,  user=current_user)
+
+FAVORITES = set()
+
+@bookcontroller.route("/favorites/add", methods=['POST'])
+def add_to_favorites():
+    data = request.form
+    id = data.get('id')
+    title = data.get('title')
+    if id and title:
+        FAVORITES.add(id)
+        flash(f'{title} was successfully added to your favorites!')
+    return redirect(url_for('bookcontroller.books'))
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'png', 'jpg', 'jpeg', 'gif'}
 
 @bookcontroller.route('/create_book', methods=['POST'])
 def create_book():
+
+    current_directory = os.getcwd()
+
+# Print the current working directory
+    print("Current Working Directory:", current_directory)
     title = request.form.get('title')
     author = request.form.get('author')
     isbn = request.form.get('isbn')
@@ -81,7 +110,8 @@ def create_book():
     cover_image = request.files['cover_image']
     if cover_image and allowed_file(cover_image.filename):
         filename = secure_filename(cover_image.filename)
-        cover_image.save(os.path.join('onlinebookstore\\static\\images', filename))
+        #cover_image.save(os.path.join('\\onlinebookstore\\static\\images', filename))
+        cover_image.save(os.path.join(os.getcwd(), 'Online_Bookstore','onlinebookstore', 'static', 'images', filename))
     else:
         filename = None  # Set to default image or handle as needed
 
@@ -101,10 +131,10 @@ def create_book():
     db.session.add(new_book)
     db.session.commit()
 
-    return jsonify({'message': 'Book created successfully'})
+    return redirect(url_for('bookcontroller.books'))
 
-@bookcontroller.route('/book/<int:book_id>', methods=['GET'])
-def get_book(book_id):
+@bookcontroller.route('/book2/<int:book_id>', methods=['GET'])
+def get_book2(book_id):
     book = Book.query.get_or_404(book_id)
     book_data = {
         "title": book.title,

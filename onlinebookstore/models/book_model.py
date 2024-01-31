@@ -14,12 +14,13 @@ class Book(db.Model):
     stock_quantity = db.Column(db.Integer)
     description = db.Column(db.Text)
     cover_image = db.Column(db.String(200))
-    # Relationships
-   #  order_details = db.relationship('OrderDetail', backref='book', lazy=True)
-   #  reviews = db.relationship('Review', backref='book', lazy=True)
-    # cart_items = db.relationship('ShoppingCart', backref='book', lazy=True)
-   #  wishlist_items = db.relationship('Wishlist', backref='book', lazy=True)
     cuser = db.Column(db.Integer, db.ForeignKey('user.id'))
     cdate = db.Column(db.DateTime, default=datetime.utcnow)
     uuser = db.Column(db.Integer, db.ForeignKey('user.id'))
     udate = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+        # Relationships
+   #  order_details = db.relationship('OrderDetail', backref='book', lazy=True)
+   #  reviews = db.relationship('Review', backref='book', lazy=True)
+    # cart_items = db.relationship('ShoppingCart', backref='book', lazy=True)
+   #  wishlist_items = db.relationship('Wishlist', backref='book', lazy=True)
